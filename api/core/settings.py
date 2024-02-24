@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -108,6 +109,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+JWT_AUTH = {
+    'JWT_SECRET_KEY': os.getenv('JWT_SECRET'),  
+    'JWT_ALGORITHM': 'HS256',
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),  
+    'JWT_EXPIRATION_DELTA': timedelta(hours=1), 
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
