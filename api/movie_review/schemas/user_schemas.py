@@ -8,7 +8,6 @@ class ResponseUserSchema(Schema):
     first_name: str
     last_name: str
     email: str
-    is_active: bool 
     
 class UserBaseSchema(BaseModel):
     def remove_null_fields(self):
