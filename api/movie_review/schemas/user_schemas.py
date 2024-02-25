@@ -10,6 +10,10 @@ class ResponseUserSchema(Schema):
     email: str
     
 class UserBaseSchema(BaseModel):
+    first_name: str = Field(None)
+    last_name: str = Field(None)
+    email: str = Field(None)
+    
     def remove_null_fields(self):
         schema_dict = self.model_dump()
         filtered_fields = {
@@ -22,16 +26,11 @@ class UserBaseSchema(BaseModel):
     
 class UpdateUserSchema(UserBaseSchema):
     username: str = Field(None)
-    first_name: str = Field(None)
-    last_name: str = Field(None)
-    email: str = Field(None)
+    
 
 class CreateUserSchema(UserBaseSchema):
     username: str 
     password: str
-    first_name: str = Field(None)
-    last_name: str = Field(None)
-    email: str = Field(None)
-    is_active: bool  = Field(True)
+    
 
     
