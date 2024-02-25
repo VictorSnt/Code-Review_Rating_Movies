@@ -3,6 +3,9 @@ from .controllers.user_controller import UserController, SuperUserController
 from ninja_extra import NinjaExtraAPI
 
 api = NinjaExtraAPI()
-api.register_controllers(NinjaJWTDefaultController)
-api.register_controllers(SuperUserController)
 api.register_controllers(UserController)
+api.register_controllers(SuperUserController)
+api.register_controllers(NinjaJWTDefaultController)
+
+
+

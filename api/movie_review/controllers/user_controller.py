@@ -1,7 +1,8 @@
 from django.http import HttpRequest
 from ninja_jwt.authentication import JWTAuth
 from ninja_extra import api_controller, route
-from ..services.user_handler import SuperUserHandler, UserHandler
+from ..services.user_handler import UserHandler
+from ..services.superuser_handler import SuperUserHandler
 from ..schemas.user_schemas import (
     ResponseUserSchema, CreateUserSchema, UpdateUserSchema
 )
@@ -35,7 +36,7 @@ class UserController:
     
 
 @api_controller('superuser', tags=['SuperUser'])
-class SuperUserController(UserController):
+class SuperUserController:
     @route.get('/get_users', response=list[ResponseUserSchema], auth=JWTAuth())
     def get_users(self, paginated=False, page=1, page_size=10):
         handler = SuperUserHandler()
@@ -43,24 +44,25 @@ class SuperUserController(UserController):
         return response
     
     @route.post('/create', response=ResponseUserSchema, auth=JWTAuth()) 
-    def create(self, user_in: CreateUserSchema):
+    def create_superuser(self, user_in: CreateUserSchema):
         handler = SuperUserHandler()
         response = handler.create_user(user_schema=user_in)
+        return response
     
     @route.put('/update', response=ResponseUserSchema, auth=JWTAuth())
-    def update(self, request: HttpRequest, user_in: UpdateUserSchema):
+    def update_superuser(self, request: HttpRequest, user_in: UpdateUserSchema):
         handler = SuperUserHandler(request)
         response = handler.update_user(user_schema=user_in)
         return response
     
     @route.put('changepassword', response=ResponseUserSchema, auth=JWTAuth())
-    def change_password(self, request: HttpRequest, newpassword: str):
+    def change_password_superuser(self, request: HttpRequest, newpassword: str):
         handler = SuperUserHandler(request)
         response = handler.change_password(newpassword=newpassword)
         return response
     
     @route.delete('/deactivate', response=ResponseUserSchema, auth=JWTAuth())
-    def inativate_user(self, request: HttpRequest, pk=None):
+    def inativate_user_superuser(self, request: HttpRequest, pk=None):
         handler = SuperUserHandler(request)
         response = handler.inativate_user(pk=pk)
         return response
