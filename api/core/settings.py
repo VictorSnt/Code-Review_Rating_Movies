@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'movie_review'
+    'movie_review',
+    'ninja_jwt',
+    'ninja_extra'
 ]
 
 MIDDLEWARE = [
@@ -109,13 +111,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-JWT_AUTH = {
-    'JWT_SECRET_KEY': os.getenv('JWT_SECRET'),  
-    'JWT_ALGORITHM': 'HS256',
-    'JWT_ALLOW_REFRESH': True,
-    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),  
-    'JWT_EXPIRATION_DELTA': timedelta(hours=1), 
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

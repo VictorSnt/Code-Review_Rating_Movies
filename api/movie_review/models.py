@@ -32,8 +32,8 @@ class Gender(models.Model):
 class Movie(models.Model):
     
     id = models.AutoField(primary_key=True)
-    actors = models.ManyToManyField(Artist, verbose_name='Ator')
-    directors = models.ManyToManyField(Artist, verbose_name='Diretor')
+    actors = models.ManyToManyField(Artist, related_name='acted_in_movies', verbose_name='Ator')
+    directors = models.ManyToManyField(Artist, related_name='directed_movies', verbose_name='Diretor')
     rating =  models.FloatField(null=True, default=0, verbose_name='Nota')
     genders = models.ManyToManyField(Gender, verbose_name='Gênero')
     year = models.DateField(null=False, verbose_name='Ano')

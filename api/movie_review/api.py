@@ -1,21 +1,7 @@
-from ninja import NinjaAPI
-from django_ninja_jwt.views import ObtainTokenView, RefreshTokenView
+from ninja_jwt.controller import NinjaJWTDefaultController
+from .controllers.user_controller import UserController
+from ninja_extra import NinjaExtraAPI
 
-
-api = NinjaAPI()
-
-@api.post('/create_user')
-def create_user():
-    pass
-
-@api.put('/update_user/{id}')
-def update_user(id):
-    pass
-
-@api.delete('/delete_user/{id}')
-def delete_user(id):
-    pass
-
-
-api.add_route("/auth/jwt/create", ObtainTokenView.as_view(), methods=["POST"])
-api.add_route("/auth/jwt/refresh", RefreshTokenView.as_view(), methods=["POST"])
+api = NinjaExtraAPI()
+api.register_controllers(NinjaJWTDefaultController)
+api.register_controllers(UserController)
