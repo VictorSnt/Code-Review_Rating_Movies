@@ -17,8 +17,8 @@ class UserRoutesTest(TestCase):
             "password":"admin"   
         }
         self.user = self.create_and_authenticate_user()
-
-    def create_and_authenticate_user(self):
+     
+    def create_admin_and_token(self):
         # Crie e Autentica usuário admin para obter o token
         get_user_model().objects.create_superuser(**self.default_admin)
         response = self.client.post(
@@ -28,7 +28,8 @@ class UserRoutesTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.token = response.json()['access']
-        
+    
+    def create_user_by_endpoint(self):
         # Cria o usuário do teste usando o token obrigatorio
         response = self.client.post(
             '/api/user/create', 
@@ -40,8 +41,9 @@ class UserRoutesTest(TestCase):
         user = get_user_model().objects.get(username=self.user_data["username"])
         self.assertIsNotNone(user)
         self.assertEqual(user.username, self.user_data["username"])
-        
-        #cria token do user teste
+    
+    def create_user_token(self):
+        # Cria token do user teste
         response = self.client.post(
             '/api/token/pair', 
             data=json.dumps(self.user_data), 
@@ -49,6 +51,11 @@ class UserRoutesTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.token = response.json()['access']
+        
+    def create_and_authenticate_user(self):
+        self.create_admin_and_token()
+        user = self.create_user_by_endpoint()
+        self.create_user_token()
         return user
 
     def test_change_password(self):
@@ -97,18 +104,16 @@ class GetUsersList(TestCase):
             "password": "admin",
         }
         cls.create_superuser()
-        cls.authenticate_superuser()
-        cls.create_test_user()
 
     @classmethod
     def create_superuser(cls):
         get_user_model().objects.create_superuser(**cls.default_admin)
-
+        cls.authenticate_superuser(cls.default_admin)
     @classmethod
-    def authenticate_superuser(cls):
+    def authenticate_superuser(cls, user):
         response = cls.client.post(
             '/api/token/pair', 
-            data=json.dumps(cls.default_admin), 
+            data=json.dumps(user), 
             content_type='application/json'
         )
         assert response.status_code == 200
@@ -123,6 +128,7 @@ class GetUsersList(TestCase):
             HTTP_AUTHORIZATION='Bearer ' + cls.token
         )
         assert response.status_code == 200
+        cls.authenticate_superuser(cls.user_data)
 
     @classmethod
     def create_test_users(cls):
@@ -133,6 +139,10 @@ class GetUsersList(TestCase):
         users = [get_user_model()(**data) for data in user_data_list]
         get_user_model().objects.bulk_create(users)
     
+    
+    def teste_create_superuser_by_endpoint(self):
+        self.create_test_user()
+        
     def test_user_listage(self):
         self.create_test_users()
         response = self.client.get(
