@@ -1,5 +1,6 @@
 from ninja_jwt.controller import NinjaJWTDefaultController
-from .controllers.user_controller import UserController, SuperUserController
+from .controllers.user_controller import UserController
+from .controllers.superuser_controller import SuperUserController
 from ninja_extra import NinjaExtraAPI
 
 api = NinjaExtraAPI()

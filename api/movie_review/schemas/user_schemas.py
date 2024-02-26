@@ -32,5 +32,4 @@ class CreateUserSchema(UserBaseSchema):
     username: str 
     password: str
     
-
     

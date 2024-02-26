@@ -12,29 +12,43 @@ class UserRoutesTest(TestCase):
             "username": "testuser",
             "password": "testpassword123",
         }
+        self.default_admin = {
+            "username":"admin",   
+            "password":"admin"   
+        }
         self.user = self.create_and_authenticate_user()
 
     def create_and_authenticate_user(self):
-        # Cria o usuário
+        # Crie e Autentica usuário admin para obter o token
+        get_user_model().objects.create_superuser(**self.default_admin)
+        response = self.client.post(
+            '/api/token/pair', 
+            data=json.dumps(self.default_admin), 
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.token = response.json()['access']
+        
+        # Cria o usuário do teste usando o token obrigatorio
         response = self.client.post(
             '/api/user/create', 
             data=json.dumps(self.user_data), 
-            content_type='application/json'
+            content_type='application/json',
+            HTTP_AUTHORIZATION='Bearer ' + self.token
         )
-       
         self.assertEqual(response.status_code, 200)
         user = get_user_model().objects.get(username=self.user_data["username"])
         self.assertIsNotNone(user)
         self.assertEqual(user.username, self.user_data["username"])
-
-        # Autentica o usuário e obtém o token
+        
+        #cria token do user teste
         response = self.client.post(
             '/api/token/pair', 
             data=json.dumps(self.user_data), 
             content_type='application/json'
         )
+        self.assertEqual(response.status_code, 200)
         self.token = response.json()['access']
-
         return user
 
     def test_change_password(self):
