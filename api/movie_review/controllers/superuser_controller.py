@@ -30,9 +30,9 @@ class SuperUserController(BaseUserController):
     def change_superuser_password(self, request: HttpRequest, newpassword: str):
         super().change_password(request, newpassword)
     
-    @route.delete('/deactivate', response=ResponseUserSchema, auth=JWTAuth())
-    def inativate_superuser(self, request: HttpRequest, pk=None):
+    @route.delete('/superdeactivate', response=ResponseUserSchema, auth=JWTAuth())
+    def inativate_superuser(self, request: HttpRequest, pk):
         self.handler = self.handler_class(request)
-        response = self.handler.inativate_user(pk=pk)
+        response = self.handler.inativate_user(pk)
         return response
     

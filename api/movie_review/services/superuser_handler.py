@@ -31,5 +31,13 @@ class SuperUserHandler(UserHandler):
         user.save()
         return user
     
+    def inativate_user(self, pk=None) -> User:
+        user = User.objects.get(username=pk)
+        if not user:
+            raise HttpError(400, "Usuario não encontrado")
+        user.is_active = False
+        user.save()
+        return user
+    
     
     

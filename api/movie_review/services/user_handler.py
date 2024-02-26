@@ -1,6 +1,4 @@
-from ninja.errors import HttpError
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
 from ..schemas.user_schemas import CreateUserSchema, UpdateUserSchema
 
 class UserHandler:

@@ -1,5 +1,6 @@
 from email.policy import default
 from urllib import request
+from certifi import contents
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
@@ -165,7 +166,20 @@ class GetUsersList(TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(len(data), 2)
-
+    
+    def teste_deactivate_superuser(self):
+        response = self.client.delete(
+            '/api/superuser/deactivate?pk={}'.format(
+                self.default_admin['username']),
+            content_type='application/json',
+            HTTP_AUTHORIZATION='Bearer ' + self.token
+        )
+        print(response.content)
+        self.assertEqual(response.status_code, 200)
+        adminuser = get_user_model().objects.get(
+            username=self.default_admin["username"]
+        )
+        self.assertEqual(adminuser.is_active, False)
         
     
     
