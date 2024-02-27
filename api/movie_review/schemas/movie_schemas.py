@@ -1,7 +1,7 @@
+from uuid import UUID
 from ninja import Schema
 from typing import List
-from uuid import UUID
-from datetime import date, datetime
+from datetime import date
 from pydantic import BaseModel
 
 class ArtistSchema(BaseModel):
@@ -10,7 +10,13 @@ class ArtistSchema(BaseModel):
 class GenderSchema(BaseModel):
     description: str
 
-class MovieSchemaOut(Schema):
+
+    
+class AvaliationSchema(BaseModel):
+    rate: int
+    movie_id: UUID
+    
+class MovieSchemain(Schema):
     title: str
     year: date
     synopsis: str
@@ -18,16 +24,25 @@ class MovieSchemaOut(Schema):
     directors: List[ArtistSchema]
     genders: List[GenderSchema]
 
-
+class MovieSchemaOut(MovieSchemain):
+    id: UUID
     @classmethod
     def from_movie(cls, movie):
-        actors = [ArtistSchema(id=actor.id, name=actor.name) for actor in movie.actors.all()]
-        directors = [ArtistSchema(id=director.id, name=director.name) for director in movie.directors.all()]
-        genders = [GenderSchema(id=gender.id, description=gender.description) for gender in movie.genders.all()]
+        actors = [
+            ArtistSchema(id=actor.id, name=actor.name) 
+            for actor in movie.actors.all()]
+        directors = [
+            ArtistSchema(id=director.id, name=director.name) 
+            for director in movie.directors.all()]
+        genders = [
+            GenderSchema(id=gender.id, description=gender.description) 
+            for gender in movie.genders.all()]
+        
         return cls(
             id=movie.id,
+            title=movie.title,
             year=movie.year,
-            synopsis=movie.synopsis,
+            synopsis=movie.get_synopsis(),
             actors=actors,
             directors=directors,
             genders=genders,
