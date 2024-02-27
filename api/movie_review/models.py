@@ -1,9 +1,9 @@
 from django.db import models
-
+import uuid
 
 class Artist(models.Model):
     
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(
         max_length=50, 
         null=False, 
@@ -18,7 +18,7 @@ class Artist(models.Model):
     
 class Gender(models.Model):
     
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     description = models.CharField(max_length=25, null=False, unique=True)
     created_at = models.DateTimeField(
         auto_now_add=True, 
@@ -31,7 +31,7 @@ class Gender(models.Model):
     
 class Movie(models.Model):
     
-    id = models.AutoField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     actors = models.ManyToManyField(Artist, related_name='acted_in_movies', verbose_name='Ator')
     directors = models.ManyToManyField(Artist, related_name='directed_movies', verbose_name='Diretor')
     rating =  models.FloatField(null=True, default=0, verbose_name='Nota')

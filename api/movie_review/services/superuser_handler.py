@@ -1,7 +1,9 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from ninja.errors import HttpError
 from ..schemas.user_schemas import CreateUserSchema
 from .user_handler import UserHandler
+
+User = get_user_model()
 
 class SuperUserHandler(UserHandler):
     def __init__(self, request=None) -> None:
@@ -9,7 +11,7 @@ class SuperUserHandler(UserHandler):
         if not self.user or not self.user.is_superuser:
             HttpError(400, "Precisa ser superusuario")
         
-    def get_users(self, paginated, page, page_size) -> list[User]: 
+    def get_users(self, paginated, page, page_size) -> list: 
         if paginated:
             start = (page - 1) * page_size
             end = start + page_size
@@ -26,18 +28,22 @@ class SuperUserHandler(UserHandler):
     
     def create_user(self, user_schema: CreateUserSchema):
         user_dict = user_schema.remove_null_fields()
-        user = User.objects.create_user(**user_dict)
-        user.is_superuser = True
-        user.save()
+        user = User.objects.create_superuser(**user_dict)
         return user
     
-    def inativate_user(self, pk=None) -> User:
-        user = User.objects.get(username=pk)
-        if not user:
-            raise HttpError(400, "Usuario não encontrado")
-        user.is_active = False
-        user.save()
-        return user
-    
+    def inativate_user(self):
+        try:
+            if self.request.user.is_superuser:
+                username = self.request.username
+                user = User.objects.get(username=username)
+                user.is_active = False
+                user.save()
+                return user
+            else:
+                raise HttpError(400, 'Você precisa ser superuser')
+        except User.DoesNotExist:
+                raise HttpError(400, "Usuario não encontrado")
+            
+        
     
     

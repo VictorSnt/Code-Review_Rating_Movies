@@ -5,6 +5,7 @@ class UserHandler:
     def __init__(self, request=None) -> None:
         self.request = request
         self.user: User = request.user if request else None
+   
     
     def create_user(self, user_schema: CreateUserSchema):
         user_dict = user_schema.remove_null_fields()

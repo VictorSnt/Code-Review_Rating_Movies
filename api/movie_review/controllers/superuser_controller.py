@@ -9,30 +9,37 @@ from ..schemas.user_schemas import (
 
 
 @api_controller('superuser', tags=['SuperUser'])
-class SuperUserController(BaseUserController):
-    handler_class = SuperUserHandler
-    
+class SuperUserController:
+    def __init__(self):
+        self.handler_class = SuperUserHandler
+        self.base_controller = BaseUserController(self.handler_class)
+        
     @route.get('/get_users', response=list[ResponseUserSchema], auth=JWTAuth())
     def get_users(self, paginated=False, page=1, page_size=10):
         self.handler = self.handler_class()
         response = self.handler.get_users(paginated, page, page_size)
         return response
     
-    @route.post('/create', response=ResponseUserSchema, auth=JWTAuth()) 
+    @route.post(
+        '/create_superuser', response=ResponseUserSchema, auth=JWTAuth()
+    ) 
     def create_superuser(self, user_in: CreateUserSchema):
-        super().create(user_in)
+        return self.base_controller.create_user(user_in)
     
-    @route.put('/update', response=ResponseUserSchema, auth=JWTAuth())
+    @route.put('/update_superuser', response=ResponseUserSchema, auth=JWTAuth())
     def update_superuser(self, request: HttpRequest, user_in: UpdateUserSchema):
-        super().update(request, user_in)
+        return self.base_controller.update_user(request, user_in)
     
-    @route.put('changepassword', response=ResponseUserSchema, auth=JWTAuth())
+    @route.put(
+        'change_superuser_password', response=ResponseUserSchema, auth=JWTAuth()
+    )
     def change_superuser_password(self, request: HttpRequest, newpassword: str):
-        super().change_password(request, newpassword)
+        return self.base_controller.change_user_password(request, newpassword)
     
-    @route.delete('/superdeactivate', response=ResponseUserSchema, auth=JWTAuth())
-    def inativate_superuser(self, request: HttpRequest, pk):
-        self.handler = self.handler_class(request)
-        response = self.handler.inativate_user(pk)
-        return response
-    
+    @route.delete(
+        '/deactivate_superuser/', response=ResponseUserSchema, auth=JWTAuth()
+    )
+    def deactivate_superuser(self, request: HttpRequest, username):
+        request.username = username
+        return self.base_controller.deactivate_user(request)
+        

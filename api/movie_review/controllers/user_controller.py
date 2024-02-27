@@ -5,4 +5,5 @@ from ..controllers.baseuser_controller import BaseUserController
 
 @api_controller('user', tags=['User'])
 class UserController(BaseUserController):
-    handler_class = UserHandler
+    def __init__(self):
+        self.handler_class = UserHandler    

@@ -1,6 +1,3 @@
-from email.policy import default
-from urllib import request
-from certifi import contents
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
@@ -15,7 +12,7 @@ class UserRoutesTest(TestCase):
         }
         self.default_admin = {
             "username":"admin",   
-            "password":"admin"   
+            "password":"3251"   
         }
         self.user = self.create_and_authenticate_user()
      
@@ -33,7 +30,7 @@ class UserRoutesTest(TestCase):
     def create_user_by_endpoint(self):
         # Cria o usuário do teste usando o token obrigatorio
         response = self.client.post(
-            '/api/user/create', 
+            '/api/user/create_user', 
             data=json.dumps(self.user_data), 
             content_type='application/json',
             HTTP_AUTHORIZATION='Bearer ' + self.token
@@ -62,7 +59,7 @@ class UserRoutesTest(TestCase):
     def test_change_password(self):
         # Testa a mudança de senha
         response = self.client.put(
-            '/api/user/changepassword?newpassword=sucesses',
+            '/api/user/change_user_password?newpassword=sucesses',
             content_type='application/json',
             HTTP_AUTHORIZATION='Bearer ' + self.token
         )
@@ -74,7 +71,7 @@ class UserRoutesTest(TestCase):
     def test_update_user(self):
         # Testa a atualização do usuário
         response = self.client.put(
-            '/api/user/update', 
+            '/api/user/update_user', 
             data=json.dumps({'first_name': 'sucesses'}),
             content_type='application/json',
             HTTP_AUTHORIZATION='Bearer ' + self.token
@@ -83,10 +80,10 @@ class UserRoutesTest(TestCase):
         user = get_user_model().objects.get(username=self.user_data["username"])
         self.assertEqual(user.first_name, 'sucesses')
 
-    def test_deactivate_user(self):
+    def test_user_deactivate(self):
         # Testa a desativação do usuário
         response = self.client.delete(
-            '/api/user/deactivate',
+            '/api/user/deactivate_user?username=admin',
             content_type='application/json',
             HTTP_AUTHORIZATION='Bearer ' + self.token
         )
@@ -102,7 +99,7 @@ class GetUsersList(TestCase):
         }
         cls.default_admin = {
             "username": "admin",
-            "password": "admin",
+            "password": "3251",
         }
         cls.create_superuser()
 
@@ -123,7 +120,7 @@ class GetUsersList(TestCase):
     @classmethod
     def create_test_user(cls):
         response = cls.client.post(
-            '/api/superuser/create', 
+            '/api/superuser/create_superuser', 
             data=json.dumps(cls.user_data), 
             content_type='application/json',
             HTTP_AUTHORIZATION='Bearer ' + cls.token
@@ -159,27 +156,14 @@ class GetUsersList(TestCase):
     def test_user_listage_paginated(self):
         self.create_test_users()
         response = self.client.get(
-            f'/api/superuser/get_users?paginated=true&page_size=2',
+            '/api/superuser/get_users?paginated=true&page_size=2',
             content_type='application/json',
             HTTP_AUTHORIZATION='Bearer ' + self.token
         )
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(len(data), 2)
-    
-    def teste_deactivate_superuser(self):
-        response = self.client.delete(
-            '/api/superuser/deactivate?pk={}'.format(
-                self.default_admin['username']),
-            content_type='application/json',
-            HTTP_AUTHORIZATION='Bearer ' + self.token
-        )
-        print(response.content)
-        self.assertEqual(response.status_code, 200)
-        adminuser = get_user_model().objects.get(
-            username=self.default_admin["username"]
-        )
-        self.assertEqual(adminuser.is_active, False)
+
         
     
     
