@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from ninja.errors import HttpError
-from ..schemas.user_schemas import CreateUserSchema
+from ..schemas.user_schemas import CreateUserSchema, PaginationSchema
 from .user_handler import UserHandler
 
 User = get_user_model()
@@ -11,10 +11,11 @@ class SuperUserHandler(UserHandler):
         if not self.user or not self.user.is_superuser:
             HttpError(400, "Precisa ser superusuario")
         
-    def get_users(self, paginated, page, page_size) -> list: 
-        if paginated:
-            start = (page - 1) * page_size
-            end = start + page_size
+    def get_users(self, query: PaginationSchema) -> list: 
+        
+        if query.paginated:
+            start = (query.page - 1) * query.page_size
+            end = start + query.page_size
             users = User.objects.filter(
                 is_active=True, is_superuser=False
                 ).order_by('username')[start:end]

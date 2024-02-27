@@ -1,6 +1,8 @@
 from pydantic import BaseModel, Field
 from ninja.errors import HttpError
 from ninja import Schema
+from.pagination_schema import PaginationSchema
+
 
 class ResponseUserSchema(Schema):
     username: str 

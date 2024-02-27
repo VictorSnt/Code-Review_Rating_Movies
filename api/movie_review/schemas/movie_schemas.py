@@ -3,6 +3,8 @@ from ninja import Schema
 from typing import List
 from datetime import date
 from pydantic import BaseModel
+from.pagination_schema import PaginationSchema
+
 
 class ArtistSchema(BaseModel):
     name: str
@@ -26,20 +28,24 @@ class MovieSchemain(Schema):
 
 class MovieSchemaOut(MovieSchemain):
     id: UUID
+
     @classmethod
     def from_movie(cls, movie):
         actors = [
-            ArtistSchema(id=actor.id, name=actor.name) 
-            for actor in movie.actors.all()]
+            {"id": str(actor.id), "name": actor.name}
+            for actor in movie.actors.all()
+        ]
         directors = [
-            ArtistSchema(id=director.id, name=director.name) 
-            for director in movie.directors.all()]
+            {"id": str(director.id), "name": director.name}
+            for director in movie.directors.all()
+        ]
         genders = [
-            GenderSchema(id=gender.id, description=gender.description) 
-            for gender in movie.genders.all()]
+            {"id": str(gender.id), "description": gender.description}
+            for gender in movie.genders.all()
+        ]
         
         return cls(
-            id=movie.id,
+            id=str(movie.id),
             title=movie.title,
             year=movie.year,
             synopsis=movie.get_synopsis(),
@@ -49,3 +55,12 @@ class MovieSchemaOut(MovieSchemain):
             created_at=movie.created_at,
             updated_at=movie.updated_at
         )
+
+class MovieListSchemain(Schema):
+    movies: List[MovieSchemaOut]
+    
+class MoviesListageQueryParams(PaginationSchema):
+    director: str = ''
+    actor: str = ''
+    gender: str = ''
+    title: str = ''

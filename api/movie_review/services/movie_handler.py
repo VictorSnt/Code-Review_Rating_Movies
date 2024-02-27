@@ -1,8 +1,10 @@
-from ..schemas.movie_schemas import AvaliationSchema, MovieSchemaOut
+from ..schemas.movie_schemas import (
+    AvaliationSchema, MovieSchemaOut, MoviesListageQueryParams
+    )
 from ..models import Artist, Gender, Movie, Avaliation
 from django.contrib.auth.models import User
 from ninja.errors import HttpError
-
+from django.db.models import Q
 
 class MovieHandler:
     def __init__(self, request=None) -> None:
@@ -33,7 +35,6 @@ class MovieHandler:
         movie_obj.directors.add(*directors)
         movie_obj.actors.add(*actors)
         movie_obj.genders.add(*genders)
-        movie_obj.add_rating_in_synopsis
         movie_obj.save()
         return MovieSchemaOut.from_movie(movie_obj)
     
@@ -47,4 +48,28 @@ class MovieHandler:
         movie_obj = avl_obj.movie
         movie_obj.calc_rates()
         return MovieSchemaOut.from_movie(movie_obj)
+    
+    def movies_listage(self, query: MoviesListageQueryParams):
+        filters = Q()
+
+        if query.director:
+            filters &= Q(directors__name__icontains=query.director)
+        if query.actor:
+            filters &= Q(actors__name__icontains=query.actor)
+        if query.gender:
+            filters &= Q(genders__description__icontains=query.gender)
+        if query.title:
+            filters &= Q(title__icontains=query.title)
+            
+        movies = Movie.objects.filter(filters).order_by('rating', 'title')
         
+        if query.paginated:
+            start = (query.page - 1) * query.page_size
+            end = start + query.page_size
+            movies = movies[start:end]
+        movies = [MovieSchemaOut.from_movie(movie) for movie in movies]
+        return movies
+    
+    def get_movie_synopsis(self, movie_id):
+        synopsis = Movie.objects.get(pk=movie_id).get_synopsis()
+        return synopsis

@@ -1,10 +1,11 @@
 from django.http import HttpRequest
+from ninja import Query
 from ninja_jwt.authentication import JWTAuth
 from ninja_extra import api_controller, route
 from ..controllers.baseuser_controller import BaseUserController
 from ..services.superuser_handler import SuperUserHandler
 from ..schemas.user_schemas import (
-    ResponseUserSchema, CreateUserSchema, UpdateUserSchema
+    ResponseUserSchema, CreateUserSchema, UpdateUserSchema, PaginationSchema
 )
 
 
@@ -15,10 +16,9 @@ class SuperUserController:
         self.base_controller = BaseUserController(self.handler_class)
         
     @route.get('/get_users', response=list[ResponseUserSchema], auth=JWTAuth())
-    def get_users(self, paginated=False, page=1, page_size=10):
+    def get_users(self, query: Query[PaginationSchema]):
         self.handler = self.handler_class()
-        response = self.handler.get_users(paginated, page, page_size)
-        return response
+        return (self.handler.get_users(query))
     
     @route.post(
         '/create_superuser', response=ResponseUserSchema, auth=JWTAuth()
