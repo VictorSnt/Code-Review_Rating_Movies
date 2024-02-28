@@ -5,7 +5,8 @@ from ninja_extra import api_controller, route
 from ..controllers.baseuser_controller import BaseUserController
 from ..services.superuser_handler import SuperUserHandler
 from ..schemas.user_schemas import (
-    ResponseUserSchema, CreateUserSchema, UpdateUserSchema, PaginationSchema
+    ResponseUserSchema, CreateUserSchema, UpdateUserSchema, PaginationSchema,
+    ResponseSuperUserSchema
 )
 
 
@@ -21,7 +22,7 @@ class SuperUserController:
         return (self.handler.get_users(query))
     
     @route.post(
-        '/create_superuser', response=ResponseUserSchema, auth=JWTAuth()
+        '/create_superuser', response=ResponseSuperUserSchema, auth=JWTAuth()
     ) 
     def create_superuser(self, user_in: CreateUserSchema):
         return self.base_controller.create_user(user_in)
@@ -39,7 +40,6 @@ class SuperUserController:
     @route.delete(
         '/deactivate_superuser/', response=ResponseUserSchema, auth=JWTAuth()
     )
-    def deactivate_superuser(self, request: HttpRequest, username):
-        request.username = username
+    def deactivate_superuser(self, request: HttpRequest):
         return self.base_controller.deactivate_user(request)
         

@@ -30,6 +30,6 @@ class BaseUserController:
     @route.delete('/deactivate_user', response=ResponseUserSchema, auth=JWTAuth())
     def deactivate_user(self, request: HttpRequest):
         self.handler = self.handler_class(request)
-        response = self.handler.inativate_user()
+        response = self.handler.deactivate_user()
         return response
     

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from ..schemas.user_schemas import CreateUserSchema, UpdateUserSchema
-
+from ninja.errors import HttpError
 class UserHandler:
     def __init__(self, request=None) -> None:
         self.request = request
@@ -24,9 +24,11 @@ class UserHandler:
         user = self.user
         user.set_password(newpassword)
         user.save()
+        if not user.check_password(newpassword):
+            raise HttpError(400, 'Erro ao alterar senha')
         return user
     
-    def inativate_user(self) -> User:
+    def deactivate_user(self) -> User:
         user = self.user
         user.is_active = False
         user.save()

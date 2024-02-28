@@ -32,18 +32,7 @@ class SuperUserHandler(UserHandler):
         user = User.objects.create_superuser(**user_dict)
         return user
     
-    def inativate_user(self):
-        try:
-            if self.request.user.is_superuser:
-                username = self.request.username
-                user = User.objects.get(username=username)
-                user.is_active = False
-                user.save()
-                return user
-            else:
-                raise HttpError(400, 'Você precisa ser superuser')
-        except User.DoesNotExist:
-                raise HttpError(400, "Usuario não encontrado")
+    
             
         
     

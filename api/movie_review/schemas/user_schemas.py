@@ -10,6 +10,9 @@ class ResponseUserSchema(Schema):
     first_name: str
     last_name: str
     email: str
+
+class ResponseSuperUserSchema(ResponseUserSchema):
+    is_superuser: bool
     
 class UserBaseSchema(BaseModel):
     first_name: str = Field(None)
