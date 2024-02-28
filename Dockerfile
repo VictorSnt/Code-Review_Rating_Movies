@@ -9,7 +9,8 @@ COPY scripts /scripts
 WORKDIR /api
 EXPOSE 8000
 
-RUN pip install pipenv && \
+RUN pip install --upgrade pip && \
+    pip install pipenv && \
     python -m pipenv install --system && \
     adduser --disabled-password --no-create-home duser && \
     apk add dos2unix && \
