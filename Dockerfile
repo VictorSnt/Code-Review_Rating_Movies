@@ -9,16 +9,18 @@ COPY scripts /scripts
 WORKDIR /api
 EXPOSE 8000
 
-RUN pip install --upgrade pip && \
-    pip install pipenv && \
+RUN pip install pipenv && \
     python -m pipenv install --system && \
     adduser --disabled-password --no-create-home duser && \
+    apk add dos2unix && \
+    dos2unix -n /scripts/commands.sh /scripts/commands.sh && \
     mkdir -p /data/web/static && \
     mkdir -p /data/web/media && \
     chown -R duser:duser /data/web/static && \
     chown -R duser:duser /data/web/media && \
     chmod -R 775 /data/web/static && \
     chmod -R 775 /data/web/media && \  
+    chmod -R 775 /scripts  && \
     chmod -R +x /scripts 
 
 ENV PATH="/scripts:$PATH"
