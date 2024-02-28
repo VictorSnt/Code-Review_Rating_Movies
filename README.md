@@ -31,13 +31,13 @@ Este é um projeto de API para consulta de informações sobre filmes, seguindo 
 4. Após o contêiner estar em execução, abra outro terminal e execute os testes:
 
     ```bash
-    docker exec -it <nome_do_servico_docker|default:movie_review_api> python manage.py test
+    docker exec -it movie_review_api python manage.py test
     ```
 
 5. Após os testes passarem com sucesso, crie um super usuário:
 
     ```bash
-    docker exec -it <nome_do_servico_docker|default:movie_review_api> python manage.py createsuperuser
+    docker exec -it movie_review_api python manage.py createsuperuser
     ```
 
 6. Agora você pode acessar a documentação da API em:
